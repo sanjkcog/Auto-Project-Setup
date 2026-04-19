@@ -359,46 +359,31 @@ print_step "Created .env.example"
 # Create .gitignore
 if [ ! -f ".gitignore" ]; then
     cat > ".gitignore" << 'EOF'
-# Environment
+# Environment — never commit secrets
 .env
 .env.local
 .env.*.local
-*.venv
-.venv
+*.env
+
+# Virtual environment
+.venv/
 venv/
 ENV/
 env/
 
-# UV
-uv.lock
-
-# Python
-__pycache__/
+# Python bytecode
+**/__pycache__/
 *.py[cod]
 *$py.class
 *.so
-.Python
+
+# Build / distribution
 build/
-develop-eggs/
 dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
 *.egg-info/
-.installed.cfg
 *.egg
-MANIFEST
 
 # IDE
-.vscode/
 .idea/
 *.swp
 *.swo
@@ -414,12 +399,10 @@ htmlcov/
 logs/
 *.log
 
-# Data
+# Data directories (large files, generated outputs)
 data/
-output/
-temp/
 
-# Claude Code
+# Claude Code runtime state (machine-specific, changes every run)
 .claude/skills/shared/state.json
 EOF
     print_step "Created .gitignore"
@@ -469,7 +452,8 @@ cat > "CLAUDE.md" << 'EOF'
 ## Commands
 ```bash
 uv run python <script>          # run a script
-uv add <package>                # add dependency (never pip install)
+uv add <package>                # preferred: add dependency and update uv.lock automatically
+pip install <package>           # backup only if uv add fails (e.g. index not supported)
 uv sync                         # install from lock file
 uv run pytest tests/ -v         # run tests
 ```
