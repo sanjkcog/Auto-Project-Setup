@@ -1128,7 +1128,7 @@ print_header "PHASE 10: Git Initialization"
 if ! git rev-parse --git-dir > /dev/null 2>&1; then
     print_step "Initializing git repository"
     git init
-    git branch -M main
+    git symbolic-ref HEAD refs/heads/main
 else
     print_warning "Git repository already exists — skipping git init"
 fi
